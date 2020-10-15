@@ -8,9 +8,9 @@ export default {
       stage: null,
       itemHeight: 0,
       itemRow: 0,
-      speed: 3,
+      speed: 2,
       maxCount: 50,
-      barrageList: [],
+      barrageList: []
     };
   },
 
@@ -28,7 +28,10 @@ export default {
     init() {
       this.stage = this.$refs.barrageStage;
       this.stageWidth = this.stage.clientWidth;
-      this.stageHeight = this.stage.clientHeight - parseInt(window.getComputedStyle(this.stage, null).paddingTop) - parseInt(window.getComputedStyle(this.stage, null).paddingBottom);
+      this.stageHeight =
+        this.stage.clientHeight -
+        parseInt(window.getComputedStyle(this.stage, null).paddingTop) -
+        parseInt(window.getComputedStyle(this.stage, null).paddingBottom);
 
       let ele = document.createElement("div");
       ele.classList.add("barrage-item");
@@ -61,9 +64,16 @@ export default {
       }
     },
 
+    addBarrageget(xx) {
+      this.addToList(xx, this.barrageList.length);
+    },
+
     addToList(msg, index) {
       let y = this.getY();
-      let x = this.barrageList.length === 0 ? this.stageWidth + 20 + this.random(50) : this.getX(y);
+      let x =
+        this.barrageList.length === 0
+          ? this.stageWidth + 20 + this.random(50)
+          : this.getX(y);
 
       this.barrageList.push({
         id: ++this.barrageId,
@@ -93,23 +103,38 @@ export default {
     },
 
     detection() {
-      this.barrageList = this.barrageList.map((val, index) => {
+      // this.barrageList = this.barrageList.map((val, index) => {
+      //   if (!val.w) {
+      //     val.w = this.stage.children[index].offsetWidth;
+      //   }
+      //   if (val.x + val.w < -20) {
+      //     val.y = this.getY();
+      //     val.x = this.getX(val.y);
+      //     // console.info("val.x", val.x);
+      //   }
+      //   return val;
+      // });
+      var temp = [];
+      this.barrageList.map((val, index) => {
         if (!val.w) {
           val.w = this.stage.children[index].offsetWidth;
         }
-        if (val.x + val.w < -20) {
-          val.y = this.getY();
-          val.x = this.getX(val.y);
+        if (val.x + val.w >= -20) {
+          temp.push(val);
           // console.info("val.x", val.x);
         }
         return val;
       });
+      this.barrageList = temp;
 
       let len = this.barrageList.length;
       if (len > this.maxCount) {
         let diff = len - this.maxCount;
         this.barrageList = this.barrageList.filter(val => {
-          return !(diff-- > 0 && (val.x + val.w < -20 || val.x > this.stageWidth + 20))
+          return !(
+            diff-- > 0 &&
+            (val.x + val.w < -20 || val.x > this.stageWidth + 20)
+          );
         });
       }
     },
@@ -125,7 +150,9 @@ export default {
       let maxX = sameRowEle.reduce((prev, cur) => {
         return cur.x + cur.w > prev ? cur.x + cur.w : prev;
       }, 0);
-      return maxX > this.stageWidth ? maxX + 50 + this.random(50) : this.stageWidth + 20 + this.random(50);
+      return maxX > this.stageWidth
+        ? maxX + 50 + this.random(50)
+        : this.stageWidth + 20 + this.random(50);
     },
 
     play() {
